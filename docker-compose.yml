@@ -1,0 +1,86 @@
+rabbitmq:
+  container_name: jscn-rabbitmq
+  image: rabbitmq:3-management
+  ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15672:15672"
+
+zipkin:
+  container_name: jscn-zipkin
+  image: openzipkin/zipkin
+  ports:
+    - "9411:9411"
+
+eureka-server:
+  container_name: jscn-eureka
+  image:  java-spring-cloud-netflix/eureka-server
+  hostname: eureka-server
+  ports:
+    - "8761:8761"
+
+config-server:
+  container_name: jscn-config
+  image:  java-spring-cloud-netflix/config-server
+  links:
+    - "eureka-server"
+    - "rabbitmq"
+  volumes:
+    - ./config-server/config:/app/config
+
+service-b:
+  container_name: jscn-service-b
+  image:  java-spring-cloud-netflix/service-b
+  links:
+    - "eureka-server"
+    - "config-server"
+    - "hystrix-dashboard"
+    - "rabbitmq"
+    - "zipkin"
+
+service-a:
+  container_name: jscn-service-a
+  image:  java-spring-cloud-netflix/service-a
+  links:
+    - "eureka-server"
+    - "config-server"
+    - "service-b"
+    - "hystrix-dashboard"
+    - "rabbitmq"
+    - "zipkin"
+
+admin-dashboard:
+  container_name: jscn-admin-dashboard
+  image:  java-spring-cloud-netflix/admin-dashboard
+  ports:
+    - "8040:8040"
+  links:
+    - "eureka-server"
+    - "rabbitmq"
+    - "config-server"
+    - "service-a"
+    - "service-b"
+    - "zuul"
+    - "hystrix-dashboard"
+
+zuul:
+  container_name: jscn-zuul
+  image:  java-spring-cloud-netflix/zuul
+  ports:
+    - "8060:8060"
+  links:
+    - "eureka-server"
+    - "config-server"
+    - "service-a"
+    - "rabbitmq"
+    - "zipkin"
+
+hystrix-dashboard:
+  container_name: jscn-hystrix-dashboard
+  image:  java-spring-cloud-netflix/hystrix-dashboard
+  ports:
+    - "8050:8050"
+  links:
+    - "eureka-server"
