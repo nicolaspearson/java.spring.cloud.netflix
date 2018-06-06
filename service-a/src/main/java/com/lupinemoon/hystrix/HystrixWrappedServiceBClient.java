@@ -1,9 +1,7 @@
-package net.devh.hystrix;
+package com.lupinemoon.hystrix;
 
+import com.lupinemoon.feign.ServiceBClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-
-import net.devh.feign.ServiceBClient;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

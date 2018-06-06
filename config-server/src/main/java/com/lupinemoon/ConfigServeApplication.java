@@ -1,4 +1,4 @@
-package net.devh;
+package com.lupinemoon;
 
 
 import org.springframework.boot.SpringApplication;
